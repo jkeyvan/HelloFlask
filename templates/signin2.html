@@ -3,13 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" media="screen">
+</head>
 </head>
 <body>
+<h1>Flaskr</h1>
+<div class=metanav>
+    {% if not session.logged_in %}
+<a href="{{ url_for('login') }}">log in</a>
+{% else %}
+<a href="{{ url_for('logout') }}">log out</a>
+{% endif %}
+</div>
 <form class="form-horizontal" method="post" action="{{ url_for('login') }}">
                 <fieldset>
                   <legend>Login</legend>
 <div class="form-group">
-                    <label for="inputPassword" class="col-lg-2 control-label">username</label>
+                    <label for="inputusername" class="col-lg-2 control-label">username</label>
                     <div class="col-lg-10">
                       <input class="form-control" name="username" placeholder="username" type="text">
                         </div>
@@ -27,5 +37,7 @@
                       <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                   </div>
+                </fieldset>
+    </form>
 </body>
 </html>

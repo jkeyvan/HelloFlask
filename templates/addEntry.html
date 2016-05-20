@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form class="form-horizontal" method="post" action="{{ url_for("add_entry") }}">
+                <fieldset>
+                  <legend>Login</legend>
+<div class="form-group">
+                    <label for="inputtitle" class="col-lg-2 control-label">title</label>
+                    <div class="col-lg-10">
+                      <input class="form-control" name="title" placeholder="title" type="text">
+                        </div>
+    </div>
+<div class="form-group">
+                    <label for="inputtext" class="col-lg-2 control-label">text</label>
+                    <div class="col-lg-10">
+                      <input class="form-control" name="text" placeholder="What is in your mind" type="text">
+                        </div>
+    </div>
+
+<div class="form-group">
+                    <div class="col-lg-10 col-lg-offset-2">
+                      <button type="reset" class="btn btn-default">Cancel</button>
+                      <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                  </div>
+</body>
+</html>

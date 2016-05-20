@@ -17,7 +17,7 @@ app.config.from_object(__name__)
 
 
 def valid_login(username,password):
-    if username=='j,keyvan' and password=="123456":
+    if username=='j' and password=="1":
         return True
 
 
@@ -60,21 +60,13 @@ def add_entry():
 def index():
     cur = g.db.execute('select title, text from entries order by id desc')
     entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
-
-
     if 'username' in session:
         status='your are login'
     else:status='your are not login , please sign in '
-
     return render_template('show_entries.html', entries=entries,status=status)
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login2():
-    if request.method == 'POST':
-        session['username'] = request.form['username']
-        return redirect(url_for('index'))
-    return '''
+'''
 <form action="" method="post">
 <p><input type=text name=username>
 <p><input type=submit value=Login>
@@ -84,9 +76,9 @@ def login2():
 def logout():
 # remove the username from the session if it's there
     session.pop('username', None)
+    session['logged_in']=False
     return redirect(url_for('index'))
 # set the secret key. keep this really secret:
-
 app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 @app.route('/post/<int:post_id>')
@@ -99,13 +91,16 @@ def show_post(post_id):
 def login():
     error=None
     if request.method=='POST':
-        if valid_login(request.form('username'),
-                       request.form('password')):
+        if valid_login(request.form['username'],request.form['pass']):
             session['username'] = request.form['username']
+            session['logged_in']=True
             return redirect(url_for('index'))
+
     else:
         error="invalid usename or password"
-    return render_template('login.html',error=error)
+        #return error
+        #resp=make_response(render_template('home.html'))
+    return render_template('signin2.html',error=error,session=session)
 
 
 
@@ -117,8 +112,8 @@ def func():
     resp = make_response(render_template('home.html'))
     resp.set_cookie('username', 'the username')
     return resp
-@app.route('/kk')
-def kk():
+@app.route('/test')
+def test():
     #return True
     return render_template('signin2.html')
 
