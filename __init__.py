@@ -57,12 +57,12 @@ def add_entry():
 
 
 @app.route('/')
-def show_entries():
+def index():
     cur = g.db.execute('select title, text from entries order by id desc')
     entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
 
 
-    if 'usetname' in session:
+    if 'username' in session:
         status='your are login'
     else:status='your are not login , please sign in '
 
@@ -70,7 +70,7 @@ def show_entries():
 
 
 @app.route('/login', methods=['GET', 'POST'])
-def login():
+def login2():
     if request.method == 'POST':
         session['username'] = request.form['username']
         return redirect(url_for('index'))
@@ -96,12 +96,13 @@ def show_post(post_id):
 
 
 @app.route('/login',methods=['POST','GET'])
-def login(name):
+def login():
     error=None
     if request.method=='POST':
         if valid_login(request.form('username'),
                        request.form('password')):
-            log_the_user_in()
+            session['username'] = request.form['username']
+            return redirect(url_for('index'))
     else:
         error="invalid usename or password"
     return render_template('login.html',error=error)
@@ -116,6 +117,11 @@ def func():
     resp = make_response(render_template('home.html'))
     resp.set_cookie('username', 'the username')
     return resp
+@app.route('/kk')
+def kk():
+    #return True
+    return render_template('signin2.html')
+
 if __name__ == '__main__':
     app.debug=True
     app.run()
