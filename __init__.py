@@ -3,7 +3,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
     abort, render_template, flash,make_response
 from contextlib import closing
 
-DATABASE = 'mydb.db'
+DATABASE = 'mydb2.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -18,7 +18,7 @@ app.config.from_object(__name__)
 
 def valid_login(username,password):
     curUsername=g.db.execute('select username,password from members')
-    list_of_usernames_and_passwords=[(row[0],row[1]) for row in curUsername.fetchall()]
+    list_of_usernames_and_passwords=[(str(row[0]),str(row[1])) for row in curUsername.fetchall()]
     if (username,password) in list_of_usernames_and_passwords:
         return True
     else:
@@ -66,9 +66,9 @@ def add_entry():
 @app.route('/')
 def index():
     cur = g.db.execute('select title, text from entries order by id desc')
-    #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
     curUsername = g.db.execute('select username,password from members')
-    entries = [(row[0], row[1]) for row in curUsername.fetchall()].append(1)
+    entries = [(str(row[0]), str(row[1])) for row in curUsername.fetchall()]
     if 'username' in session:
         status='your are login'
     else:status='your are not login , please sign in '
@@ -100,7 +100,7 @@ def show_post(post_id):
 def login():
     error=None
     if request.method=='POST':
-        if valid_login(request.form['username'],request.form['pass']):
+        if valid_login(str(request.form['username']),str(request.form['pass'])):
             session['username'] = request.form['username']
             session['logged_in']=True
             return redirect(url_for('index'))
@@ -120,6 +120,7 @@ def signup():
         email=request.form['email']
         password=request.form['pass']
         g.db.execute('insert into members (username,email,password) VALUES (%s,%s,%s)'%(username,email,password))
+        g.db.commit()
         flash('You sign up successfully :)')
         session['username'] = request.form['username']
         session['logged_in'] = True
