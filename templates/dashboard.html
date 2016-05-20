@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <title>Title</title>
 </head>
-<body>
-<form class="form-horizontal" method="post" action="{{ url_for('add_entry') }}">
+<h1>
+    {% for item in Items %}
+    <p>item</p>
+    {%endfor%}
+
+</h1>
+<form class="form-horizontal" method="post" action="{{ url_for('dashboard') }}">
                 <fieldset>
-                  <legend>Login</legend>
+                  <legend>add comment</legend>
 <div class="form-group">
-                    <label for="inputtitle" class="col-lg-2 control-label">title</label>
+                    <label for="inputtitle12" class="col-lg-2 control-label">title</label>
                     <div class="col-lg-10">
                       <input class="form-control" name="title" placeholder="title" type="text">
                         </div>
     </div>
 <div class="form-group">
-                    <label for="inputtext" class="col-lg-2 control-label">text</label>
+                    <label for="inputtext12" class="col-lg-2 control-label">text</label>
                     <div class="col-lg-10">
                       <input class="form-control" name="text" placeholder="What is in your mind" type="text">
                         </div>
@@ -28,6 +33,10 @@
                     </div>
                   </div>
                     </fieldset>
+
     </form>
+
+<body>
+
 </body>
 </html>

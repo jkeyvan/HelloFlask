@@ -2,6 +2,7 @@ import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, \
     abort, render_template, flash,make_response
 from contextlib import closing
+from models import post
 
 DATABASE = 'mydb2.db'
 DEBUG = True
@@ -56,12 +57,25 @@ def log_the_user_in():
 def add_entry():
     if not session.get('logged_in'):
         abort(401)
-    g.db.execute('insert into entries (title, text) values (?, ?)',
-        [request.form['title'], request.form['text']])
-    g.db.commit()
+    if request.method == 'POST':pass
+        #mypost=post(session['username'],request.form['title'],request.form['text'])
+        #g.db.execute('insert into entries (username,title, text,rate) values (%s,%s,%s,%s)'%(mypost.user,mypost.title,mypost.text,mypost.rate))
+        #g.db.commit()
     flash('New entry was successfully posted')
-    return redirect(url_for('show_entries'))
+    return render_template('addEntry.html')
 
+@app.route('/dashboard')
+def dashboard():
+    #curItems = g.db.execute('select title,text from entries where username=%s' % session['username'])
+    #Items = [(row[0], row[1]) for row in curItems.fetchall()]
+    if request.method=='POST':
+        #mypost = post(session['username'], request.form['title'], request.form['text'])
+        #g.db.execute('insert into entries (username,title, text,rate) values (%s,%s,%s,%s)' % (mypost.user, mypost.title, mypost.text, mypost.rate))
+        #g.db.commit()
+        #return redirect(url_for('add_entry'))
+        Items=[2]
+        return  redirect(url_for('index'))
+    return render_template('dashboard.html')
 
 @app.route('/')
 def index():
@@ -71,6 +85,7 @@ def index():
     entries = [(str(row[0]), str(row[1])) for row in curUsername.fetchall()]
     if 'username' in session:
         status='your are login'
+        return redirect(url_for('dashboard'))
     else:status='your are not login , please sign in '
     return render_template('show_entries.html', entries=entries,status=status)
 
@@ -103,13 +118,13 @@ def login():
         if valid_login(str(request.form['username']),str(request.form['pass'])):
             session['username'] = request.form['username']
             session['logged_in']=True
-            return redirect(url_for('index'))
+            return redirect(url_for('dashboard'))
 
     else:
         error="invalid usename or password"
         #return error
         #resp=make_response(render_template('home.html'))
-    return render_template('signin2.html',error=error,session=session)
+    return render_template('log_in_page.html',error=error,session=session)
 
 
 @app.route('/signup',methods=['POST','GET'])
@@ -125,7 +140,7 @@ def signup():
         session['username'] = request.form['username']
         session['logged_in'] = True
         return redirect(url_for('index'))
-    return render_template('signup.html')
+    return render_template('sign_up_page.html')
 
 
 
