@@ -3,7 +3,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
     abort, render_template, flash,make_response
 from contextlib import closing
 
-DATABASE = 'flaskr.db'
+DATABASE = 'mydb.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -17,8 +17,13 @@ app.config.from_object(__name__)
 
 
 def valid_login(username,password):
-    if username=='j' and password=="1":
+    curUsername=g.db.execute('select username,password from members')
+    list_of_usernames_and_passwords=[(row[0],row[1]) for row in curUsername.fetchall()]
+    if (username,password) in list_of_usernames_and_passwords:
         return True
+    else:
+        return False
+
 
 
 def connect_db():
@@ -30,6 +35,8 @@ def init_db():
         with app.open_resource('schema.sql', mode='r') as f:
             db.cursor().executescript(f.read())
         db.commit()
+
+#init_db()
 
 @app.before_request
 def before_request():
@@ -59,7 +66,9 @@ def add_entry():
 @app.route('/')
 def index():
     cur = g.db.execute('select title, text from entries order by id desc')
-    entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+    curUsername = g.db.execute('select username,password from members')
+    entries = [(row[0], row[1]) for row in curUsername.fetchall()].append(1)
     if 'username' in session:
         status='your are login'
     else:status='your are not login , please sign in '
@@ -103,6 +112,21 @@ def login():
     return render_template('signin2.html',error=error,session=session)
 
 
+@app.route('/signup',methods=['POST','GET'])
+def signup():
+    if request.method=='POST':
+        print 'hello'
+        username=request.form['username']
+        email=request.form['email']
+        password=request.form['pass']
+        g.db.execute('insert into members (username,email,password) VALUES (%s,%s,%s)'%(username,email,password))
+        flash('You sign up successfully :)')
+        session['username'] = request.form['username']
+        session['logged_in'] = True
+        return redirect(url_for('index'))
+    return render_template('signup.html')
+
+
 
 @app.route('/user/<username>')
 def profile(username): pass
@@ -115,7 +139,9 @@ def func():
 @app.route('/test')
 def test():
     #return True
-    return render_template('signin2.html')
+    return render_template('signup.html')
+
+
 
 if __name__ == '__main__':
     app.debug=True
