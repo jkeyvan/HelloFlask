@@ -4,7 +4,7 @@ from flask import Flask, request, session, g, redirect, url_for, \
 from contextlib import closing
 from models import post
 
-DATABASE = 'mydb2.db'
+DATABASE = 'mydb.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -64,17 +64,23 @@ def add_entry():
     flash('New entry was successfully posted')
     return render_template('addEntry.html')
 
-@app.route('/dashboard')
+@app.route('/dashboard', methods=['POST','GET'])
 def dashboard():
-    #curItems = g.db.execute('select title,text from entries where username=%s' % session['username'])
-    #Items = [(row[0], row[1]) for row in curItems.fetchall()]
+    curItems = g.db.execute('select title,text from entries where username=%s' % session['username'])
+    Items = [(row[0], row[1]) for row in curItems.fetchall()]
     if request.method=='POST':
+        username=session['username']
+        #username='p'
+        title=request.form['title']
+
+        text=request.form['text']
         #mypost = post(session['username'], request.form['title'], request.form['text'])
-        #g.db.execute('insert into entries (username,title, text,rate) values (%s,%s,%s,%s)' % (mypost.user, mypost.title, mypost.text, mypost.rate))
-        #g.db.commit()
+        rate='0'
+        g.db.execute('insert into entries (username,title,text,rate)VALUES (%s,%s,%s,%s)'%(username,title,text,rate))
+        g.db.commit()
         #return redirect(url_for('add_entry'))
         Items=[2]
-        return  redirect(url_for('index'))
+        return redirect(url_for('dashboard'))
     return render_template('dashboard.html')
 
 @app.route('/')
